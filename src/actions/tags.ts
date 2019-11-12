@@ -1,4 +1,3 @@
-// @ts-ignore
 import Tag from "../types/Tag";
 import {
     CHANGE_TAG_IN_FORM,

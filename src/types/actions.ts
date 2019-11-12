@@ -67,7 +67,9 @@ export interface CloseTagModal {
 
 export interface LoadArticlesAction {
     type: typeof LOAD_ARTICLES,
-    articles: Array<Article>
+    articles: Array<Article>,
+    numberOfPages: number,
+    currentPage: number
 }
 
 export interface LoadArticleInFormAction {

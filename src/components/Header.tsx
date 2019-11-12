@@ -64,7 +64,7 @@ const Header: React.FC = () => {
                     <ListItemIcon><LabelIcon/></ListItemIcon>
                     <ListItemText primary={"Manage Tags"}/>
                 </ListItem>
-                <ListItem component={Link} to={"/posts"} button onClick={closeDrawer}>
+                <ListItem component={Link} to={"/articles"} button onClick={closeDrawer}>
                     <ListItemIcon><DescriptionIcon/></ListItemIcon>
                     <ListItemText primary={"Manage Posts"}/>
                 </ListItem>
