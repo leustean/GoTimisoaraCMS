@@ -3,7 +3,7 @@ import React from "react";
 import TextField from "@material-ui/core/TextField";
 import {AppState} from "../store";
 import {connect} from "react-redux";
-import Article, {IMAGE, Image, ImageGroup, PARAGRAPH, Paragraph, TITLE, Title} from "../types/Article";
+import Article, {IMAGE, Image, IMAGE_GROUP, ImageGroup, PARAGRAPH, Paragraph, TITLE, Title} from "../types/Article";
 import {useParams} from "react-router-dom"
 import {loadArticleInFormThunk} from "../thunks/articles";
 import LoadingAnimation from "./LoadingAnimation";
@@ -14,6 +14,7 @@ import Container from "@material-ui/core/Container";
 import TitleEditor from "./ArticleContent/TitleEditor";
 import ParagraphEditor from "./ArticleContent/ParagraphEditor";
 import ImageEditor from "./ArticleContent/ImageEditor";
+import ImageGroupEditor from "./ArticleContent/ImageGroupEditor";
 
 // noinspection TypeScriptValidateJSTypes
 const useStyle = makeStyles(theme => ({
@@ -40,6 +41,10 @@ const mapObjectToComponent = (content: Title | Paragraph | Image | ImageGroup, i
 
     if (content.type === IMAGE) {
         return <ImageEditor image={content} position={index}/>
+    }
+
+    if (content.type === IMAGE_GROUP) {
+        return <ImageGroupEditor imageGroup={content} position={index}/>
     }
 
     return null;

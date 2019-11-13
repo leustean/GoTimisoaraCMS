@@ -6,6 +6,7 @@ import {Image} from "../../types/Article";
 import {connect} from "react-redux";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {Button} from "@material-ui/core";
+import PositionButtons from "./PositionButtons";
 
 // noinspection TypeScriptValidateJSTypes
 const useStyle = makeStyles(theme => ({
@@ -33,11 +34,13 @@ const ImageEditor = ({position, image, dispatch}: ImageProps) => {
 
     return <Card>
         <CardContent>
+            <PositionButtons position={position}/>
             <img className={classes.image} alt={image.imageCaption} src={image.imageUrl}/>
             <Button
                 className={classes.input}
                 variant="contained"
                 component="label"
+                color={"primary"}
             >
                 Upload Image
                 <input

@@ -2,12 +2,14 @@ import React from "react";
 import TextField from "@material-ui/core/TextField";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import {Title} from "../../types/Article";
-import MenuItem from "@material-ui/core/MenuItem";
+import {Image, ImageGroup} from "../../types/Article";
 import {connect} from "react-redux";
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import {Button} from "@material-ui/core";
+import ImageEditor from "./ImageEditor";
 import PositionButtons from "./PositionButtons";
 
+// noinspection TypeScriptValidateJSTypes
 const useStyle = makeStyles(theme => ({
     input: {
         marginTop: theme.spacing(2),
@@ -15,18 +17,19 @@ const useStyle = makeStyles(theme => ({
     }
 }));
 
-interface TitleProps {
+interface ImageGroupProps {
     position: number,
-    title: Title,
+    imageGroup: ImageGroup,
     dispatch: (arg0: any) => void
 }
 
-const titleVariants = [
-    'h1', 'h2', 'h3', 'h4', 'h5', 'h6'
-];
 
-const TitleEditor = ({position, title, dispatch}: TitleProps) => {
+const ImageGroupEditor = ({position, imageGroup, dispatch}: ImageGroupProps) => {
     const classes = useStyle();
+
+    const images = imageGroup.images.map((image: Image, index: number) => {
+        return <ImageEditor key={index} position={index} image={image}/>
+    });
 
     return <Card>
         <CardContent>
@@ -34,26 +37,21 @@ const TitleEditor = ({position, title, dispatch}: TitleProps) => {
             <TextField
                 className={classes.input}
                 fullWidth
-                label="Title Text"
+                label="Image Group Title"
                 variant={"outlined"}
-                value={title.titleText}
+                multiline
+                value={imageGroup.imageGroupTitle}
             />
-            <TextField
+            <Button
                 className={classes.input}
-                fullWidth
-                select
-                label="Title Type"
-                value={title.titleVariant}
-                variant="outlined"
+                variant="contained"
+                color={"primary"}
             >
-                {titleVariants.map(titleVariant => (
-                    <MenuItem key={titleVariant} value={titleVariant}>
-                        {titleVariant}
-                    </MenuItem>
-                ))}
-            </TextField>
+                Add image
+            </Button>
+            {images}
         </CardContent>
     </Card>
 };
 
-export default connect()(TitleEditor);
+export default connect()(ImageGroupEditor);

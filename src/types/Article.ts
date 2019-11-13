@@ -39,5 +39,5 @@ export const IMAGE_GROUP = "IMAGE_GROUP";
 export interface ImageGroup {
     type: "IMAGE_GROUP"
     imageGroupTitle: null | string
-    images: [Image],
+    images: Array<Image>,
 }

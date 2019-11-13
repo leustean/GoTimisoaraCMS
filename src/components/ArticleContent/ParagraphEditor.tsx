@@ -5,6 +5,7 @@ import CardContent from "@material-ui/core/CardContent";
 import {Paragraph} from "../../types/Article";
 import {connect} from "react-redux";
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import PositionButtons from "./PositionButtons";
 
 // noinspection TypeScriptValidateJSTypes
 const useStyle = makeStyles(theme => ({
@@ -26,6 +27,7 @@ const ParagraphEditor = ({position, paragraph, dispatch}: ParagraphProps) => {
 
     return <Card>
         <CardContent>
+            <PositionButtons position={position}/>
             <TextField
                 className={classes.input}
                 fullWidth
