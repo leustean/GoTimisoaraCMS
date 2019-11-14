@@ -12,10 +12,12 @@ export default interface Article {
 
 export const TITLE = "TITLE";
 
+export type TitleVariant = "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
+
 export interface Title {
     type: "TITLE"
     titleText: string,
-    titleVariant: "h1" | "h2" | "h3" | "h4" | "h5" | "h6"
+    titleVariant: TitleVariant
 }
 
 export const PARAGRAPH = "PARAGRAPH";

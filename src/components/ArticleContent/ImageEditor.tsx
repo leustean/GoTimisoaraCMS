@@ -6,7 +6,9 @@ import {Image} from "../../types/Article";
 import {connect} from "react-redux";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {Button} from "@material-ui/core";
-import PositionButtons from "./PositionButtons";
+import PositionButtons from "./ActionButtons";
+import {changeContentInCurrentArticle, changeImageInImageGroup} from "../../thunks/articles";
+import CardActions from "@material-ui/core/CardActions";
 
 // noinspection TypeScriptValidateJSTypes
 const useStyle = makeStyles(theme => ({
@@ -26,16 +28,81 @@ interface ImageProps {
     position: number,
     image: Image,
     dispatch: (arg0: any) => void
+    parentPosition?: number | null
 }
 
 
-const ImageEditor = ({position, image, dispatch}: ImageProps) => {
+const ImageEditor = ({position, image, dispatch, parentPosition = null}: ImageProps) => {
     const classes = useStyle();
+
+    let changeCaption, changeLink, changeImage;
+
+    if (parentPosition !== null) {
+        changeCaption = (event: React.ChangeEvent<HTMLInputElement>) => {
+            dispatch(changeImageInImageGroup({
+                ...image,
+                imageCaption: event.target.value
+            }, position, parentPosition))
+        };
+
+        changeLink = (event: React.ChangeEvent<HTMLInputElement>) => {
+            dispatch(changeImageInImageGroup({
+                ...image,
+                imageLink: event.target.value
+            }, position, parentPosition))
+        };
+
+
+        changeImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+            if (event.target.files !== null && event.target.files[0] !== undefined) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    if (reader.result) {
+                        dispatch(changeImageInImageGroup({
+                            ...image,
+                            imageUrl: reader.result as string
+                        }, position, parentPosition))
+                    }
+                };
+                reader.readAsDataURL(event.target.files[0] as Blob);
+            }
+        };
+    } else {
+        changeCaption = (event: React.ChangeEvent<HTMLInputElement>) => {
+            dispatch(changeContentInCurrentArticle({
+                ...image,
+                imageCaption: event.target.value
+            }, position))
+        };
+
+        changeLink = (event: React.ChangeEvent<HTMLInputElement>) => {
+            dispatch(changeContentInCurrentArticle({
+                ...image,
+                imageLink: event.target.value
+            }, position))
+        };
+
+
+        changeImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+            if (event.target.files !== null && event.target.files[0] !== undefined) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    if (reader.result) {
+                        dispatch(changeContentInCurrentArticle({
+                            ...image,
+                            imageUrl: reader.result as string
+                        }, position))
+                    }
+                };
+                reader.readAsDataURL(event.target.files[0] as Blob);
+            }
+        };
+    }
+
 
     return <Card>
         <CardContent>
-            <PositionButtons position={position}/>
-            <img className={classes.image} alt={image.imageCaption} src={image.imageUrl}/>
+            {image.imageUrl !== '' && <img className={classes.image} alt={image.imageCaption} src={image.imageUrl}/>}
             <Button
                 className={classes.input}
                 variant="contained"
@@ -44,11 +111,13 @@ const ImageEditor = ({position, image, dispatch}: ImageProps) => {
             >
                 Upload Image
                 <input
+                    onChange={changeImage}
                     type="file"
                     style={{display: "none"}}
                 />
             </Button>
             <TextField
+                onChange={changeCaption}
                 className={classes.input}
                 fullWidth
                 label="Image Caption"
@@ -57,6 +126,7 @@ const ImageEditor = ({position, image, dispatch}: ImageProps) => {
                 value={image.imageCaption}
             />
             <TextField
+                onChange={changeLink}
                 className={classes.input}
                 fullWidth
                 label="Image Link"
@@ -65,6 +135,9 @@ const ImageEditor = ({position, image, dispatch}: ImageProps) => {
                 value={image.imageLink}
             />
         </CardContent>
+        <CardActions>
+            <PositionButtons position={position} parentPosition={parentPosition}/>
+        </CardActions>
     </Card>
 };
 

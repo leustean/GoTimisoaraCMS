@@ -1,5 +1,10 @@
 import Article from "../types/Article";
-import {ArticleTypes, DOWN, LOAD_ARTICLE_IN_FORM, LOAD_ARTICLES, MOVE_ARTICLE_CONTENT, UP} from "../types/actions";
+import {
+    ArticleTypes,
+    CHANGE_ARTICLE_IN_FORM,
+    LOAD_ARTICLE_IN_FORM,
+    LOAD_ARTICLES,
+} from "../types/actions";
 
 interface ArticlesState {
     articles: Array<Article> | null,
@@ -49,28 +54,11 @@ export default function articlesReducer(state = initialState, action: ArticleTyp
                 ...state,
                 currentArticle: action.article
             };
-        case MOVE_ARTICLE_CONTENT:
-            if (action.direction === UP && action.currentPosition === 0) {
-                return state
-            }
-            if (action.direction === DOWN && (action.currentPosition + 1) === state.currentArticle.contents.length) {
-                return state
-            }
-            const newArticleContents = [...state.currentArticle.contents];
-            const articleContentToMove = newArticleContents[action.currentPosition];
-            newArticleContents.splice(action.currentPosition, 1);
-            if (action.direction === UP) {
-                newArticleContents.splice(action.currentPosition - 1, 0, articleContentToMove)
-            } else {
-                newArticleContents.splice(action.currentPosition + 1, 0, articleContentToMove)
-            }
 
+        case CHANGE_ARTICLE_IN_FORM:
             return {
                 ...state,
-                currentArticle: {
-                    ...state.currentArticle,
-                    contents: newArticleContents
-                }
+                currentArticle: action.article
             };
         default:
             return state

@@ -21,8 +21,6 @@ export const CHANGE_ARTICLE_IN_FORM = "CHANGE_ARTICLE_IN_FORM";
 export const FAIL_SUBMIT_ARTICLE_FORM = "FAIL_SUBMIT_ARTICLE_FORM";
 export const SUCCESS_SUBMIT_ARTICLE_FORM = "SUCCESS_SUBMIT_ARTICLE_FORM";
 
-export const MOVE_ARTICLE_CONTENT = "MOVE_ARTICLE_CONTENT";
-
 export interface LoadTagsAction {
     type: typeof LOAD_TAGS,
     tags: Array<Tag>
@@ -84,11 +82,6 @@ export interface ChangeArticleInFormAction {
     article: Article
 }
 
-export interface ChangeArticleInFormAction {
-    type: typeof CHANGE_ARTICLE_IN_FORM,
-    tag: Article
-}
-
 export interface SubmitArticleForm {
     type: typeof SUBMIT_ARTICLE_FORM
 }
@@ -104,12 +97,6 @@ export interface SuccessSubmitArticleForm {
 export const UP = "UP";
 export const DOWN = "DOWN";
 
-export interface MoveArticleContentUp {
-    type: typeof MOVE_ARTICLE_CONTENT,
-    direction: typeof UP | typeof DOWN,
-    currentPosition: number
-}
-
 export type ArticleTypes =
     LoadArticlesAction
     | LoadArticleInFormAction
@@ -117,7 +104,6 @@ export type ArticleTypes =
     | SubmitArticleForm
     | SuccessSubmitArticleForm
     | FailSubmitArticleForm
-    | MoveArticleContentUp
 
 export type TagTypes =
     LoadTagsAction

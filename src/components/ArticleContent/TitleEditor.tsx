@@ -2,12 +2,15 @@ import React from "react";
 import TextField from "@material-ui/core/TextField";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
-import {Title} from "../../types/Article";
+import {Title, TitleVariant} from "../../types/Article";
 import MenuItem from "@material-ui/core/MenuItem";
 import {connect} from "react-redux";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import PositionButtons from "./PositionButtons";
+import PositionButtons from "./ActionButtons";
+import {changeContentInCurrentArticle} from "../../thunks/articles";
+import CardActions from "@material-ui/core/CardActions";
 
+// noinspection TypeScriptValidateJSTypes
 const useStyle = makeStyles(theme => ({
     input: {
         marginTop: theme.spacing(2),
@@ -28,15 +31,29 @@ const titleVariants = [
 const TitleEditor = ({position, title, dispatch}: TitleProps) => {
     const classes = useStyle();
 
+    const changeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(changeContentInCurrentArticle({
+            ...title,
+            titleText: event.target.value
+        }, position))
+    };
+
+    const changeTitleVariant = (event: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(changeContentInCurrentArticle({
+            ...title,
+            titleVariant: event.target.value as TitleVariant
+        }, position))
+    };
+
     return <Card>
         <CardContent>
-            <PositionButtons position={position}/>
             <TextField
                 className={classes.input}
                 fullWidth
                 label="Title Text"
                 variant={"outlined"}
                 value={title.titleText}
+                onChange={changeTitle}
             />
             <TextField
                 className={classes.input}
@@ -45,6 +62,7 @@ const TitleEditor = ({position, title, dispatch}: TitleProps) => {
                 label="Title Type"
                 value={title.titleVariant}
                 variant="outlined"
+                onChange={changeTitleVariant}
             >
                 {titleVariants.map(titleVariant => (
                     <MenuItem key={titleVariant} value={titleVariant}>
@@ -53,6 +71,9 @@ const TitleEditor = ({position, title, dispatch}: TitleProps) => {
                 ))}
             </TextField>
         </CardContent>
+        <CardActions>
+            <PositionButtons position={position}/>
+        </CardActions>
     </Card>
 };
 

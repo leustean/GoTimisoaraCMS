@@ -5,7 +5,9 @@ import CardContent from "@material-ui/core/CardContent";
 import {Paragraph} from "../../types/Article";
 import {connect} from "react-redux";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import PositionButtons from "./PositionButtons";
+import PositionButtons from "./ActionButtons";
+import {changeContentInCurrentArticle} from "../../thunks/articles";
+import CardActions from "@material-ui/core/CardActions";
 
 // noinspection TypeScriptValidateJSTypes
 const useStyle = makeStyles(theme => ({
@@ -25,9 +27,15 @@ interface ParagraphProps {
 const ParagraphEditor = ({position, paragraph, dispatch}: ParagraphProps) => {
     const classes = useStyle();
 
+    const changeParagraph = (event: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(changeContentInCurrentArticle({
+            ...paragraph,
+            paragraphContent: event.target.value
+        }, position))
+    };
+
     return <Card>
         <CardContent>
-            <PositionButtons position={position}/>
             <TextField
                 className={classes.input}
                 fullWidth
@@ -35,8 +43,12 @@ const ParagraphEditor = ({position, paragraph, dispatch}: ParagraphProps) => {
                 variant={"outlined"}
                 multiline
                 value={paragraph.paragraphContent}
+                onChange={changeParagraph}
             />
         </CardContent>
+        <CardActions>
+            <PositionButtons position={position}/>
+        </CardActions>
     </Card>
 };
 
