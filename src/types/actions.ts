@@ -1,6 +1,7 @@
 // @ts-ignore
 import Tag from "./Tag";
 import Article from "./Article";
+import User from "./User";
 
 export const LOAD_TAGS = "LOAD_TAGS";
 export const LOAD_TAG_IN_FORM = "LOAD_TAG_IN_FORM";
@@ -21,22 +22,30 @@ export const CHANGE_ARTICLE_IN_FORM = "CHANGE_ARTICLE_IN_FORM";
 export const FAIL_SUBMIT_ARTICLE_FORM = "FAIL_SUBMIT_ARTICLE_FORM";
 export const SUCCESS_SUBMIT_ARTICLE_FORM = "SUCCESS_SUBMIT_ARTICLE_FORM";
 
-export interface LoadTagsAction {
+export const LOAD_CURRENT_USER = "LOAD_CURRENT_USER";
+export const LOAD_USERS = "LOAD_USERS";
+export const LOAD_USER_IN_FORM = "LOAD_USER_IN_FORM";
+export const SUBMIT_USER_FORM = "SUBMIT_USER_FORM";
+export const CHANGE_USER_IN_FORM = "CHANGE_USER_IN_FORM";
+export const FAIL_SUBMIT_USER_FORM = "FAIL_SUBMIT_USER_FORM";
+export const SUCCESS_SUBMIT_USER_FORM = "SUCCESS_SUBMIT_USER_FORM";
+
+export const OPEN_USER_MODAL = "OPEN_USER_MODAL";
+export const CLOSE_USER_MODAL = "CLOSE_USER_MODAL";
+
+export const CREATE_NEW_USER = "CREATE_NEW_USER";
+
+export interface LoadTags {
     type: typeof LOAD_TAGS,
     tags: Array<Tag>
 }
 
-export interface LoadTagInFormAction {
+export interface LoadTagInForm {
     type: typeof LOAD_TAG_IN_FORM,
     tag: Tag
 }
 
-export interface ChangeTagInFormAction {
-    type: typeof CHANGE_TAG_IN_FORM,
-    tag: Tag
-}
-
-export interface ChangeTagInFormAction {
+export interface ChangeTagInForm {
     type: typeof CHANGE_TAG_IN_FORM,
     tag: Tag
 }
@@ -65,19 +74,19 @@ export interface CloseTagModal {
     type: typeof CLOSE_TAG_MODAL
 }
 
-export interface LoadArticlesAction {
+export interface LoadArticles {
     type: typeof LOAD_ARTICLES,
     articles: Array<Article>,
     numberOfPages: number,
     currentPage: number
 }
 
-export interface LoadArticleInFormAction {
+export interface LoadArticleInForm {
     type: typeof LOAD_ARTICLE_IN_FORM,
     article: Article
 }
 
-export interface ChangeArticleInFormAction {
+export interface ChangeArticleInForm {
     type: typeof CHANGE_ARTICLE_IN_FORM,
     article: Article
 }
@@ -97,21 +106,77 @@ export interface SuccessSubmitArticleForm {
 export const UP = "UP";
 export const DOWN = "DOWN";
 
+export interface LoadCurrentUser {
+    type: typeof LOAD_CURRENT_USER,
+    user: User
+}
+
+export interface LoadUsers {
+    type: typeof LOAD_USERS,
+    users: Array<User>
+}
+
+export interface LoadUserInForm {
+    type: typeof LOAD_USER_IN_FORM,
+    user: User
+}
+
+export interface ChangeUserInForm {
+    type: typeof CHANGE_USER_IN_FORM,
+    user: User
+}
+
+export interface SubmitUserForm {
+    type: typeof SUBMIT_USER_FORM
+}
+
+export interface FailSubmitUserForm {
+    type: typeof FAIL_SUBMIT_USER_FORM
+}
+
+export interface SuccessSubmitUserForm {
+    type: typeof SUCCESS_SUBMIT_USER_FORM
+}
+
+export interface CreateNewUser {
+    type: typeof CREATE_NEW_USER
+}
+
+export interface OpenUserModal {
+    type: typeof OPEN_USER_MODAL
+}
+
+export interface CloseUserModal {
+    type: typeof CLOSE_USER_MODAL
+}
+
 export type ArticleTypes =
-    LoadArticlesAction
-    | LoadArticleInFormAction
-    | ChangeArticleInFormAction
+    LoadArticles
+    | LoadArticleInForm
+    | ChangeArticleInForm
     | SubmitArticleForm
     | SuccessSubmitArticleForm
     | FailSubmitArticleForm
 
 export type TagTypes =
-    LoadTagsAction
-    | LoadTagInFormAction
-    | ChangeTagInFormAction
+    LoadTags
+    | LoadTagInForm
+    | ChangeTagInForm
     | SubmitTagForm
     | SuccessSubmitTagForm
     | FailSubmitTagForm
     | OpenTagModal
     | CloseTagModal
     | CreateNewTag
+
+export type UserTypes =
+    LoadUsers
+    | LoadUserInForm
+    | ChangeUserInForm
+    | SubmitUserForm
+    | SuccessSubmitUserForm
+    | FailSubmitUserForm
+    | OpenUserModal
+    | CloseUserModal
+    | CreateNewUser
+    | LoadCurrentUser

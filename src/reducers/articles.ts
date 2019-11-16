@@ -8,7 +8,7 @@ import {
 
 interface ArticlesState {
     articles: Array<Article> | null,
-    currentArticle: Article,
+    currentArticle: Article | null,
     isSubmitting: boolean,
     isSuccess: boolean,
     message: string,
@@ -16,25 +16,9 @@ interface ArticlesState {
     numberOfPages: number
 }
 
-const today = new Date();
-
-const emptyArticle = {
-    articleId: 0,
-    title: "",
-    contents: [],
-    createdAt: `${today.getDay()}/${today.getMonth()}/${today.getFullYear()}`,
-    updatedAt: `${today.getDay()}/${today.getMonth()}/${today.getFullYear()}`,
-    isVisible: false,
-    author: {
-        email: "",
-        username: "",
-        fullName: ""
-    }
-};
-
 const initialState: ArticlesState = {
     articles: null,
-    currentArticle: emptyArticle,
+    currentArticle: null,
     isSubmitting: false,
     isSuccess: false,
     message: "",
@@ -47,7 +31,9 @@ export default function articlesReducer(state = initialState, action: ArticleTyp
         case LOAD_ARTICLES:
             return {
                 ...state,
-                articles: action.articles
+                articles: action.articles,
+                currentPage: action.currentPage,
+                numberOfPages: action.numberOfPages
             };
         case LOAD_ARTICLE_IN_FORM:
             return {

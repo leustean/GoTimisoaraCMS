@@ -13,6 +13,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import LabelIcon from '@material-ui/icons/Label';
 import DescriptionIcon from '@material-ui/icons/Description';
 import HomeIcon from '@material-ui/icons/Home';
+import PersonIcon from '@material-ui/icons/Person';
 import {Link} from "react-router-dom";
 
 // noinspection TypeScriptValidateJSTypes
@@ -67,6 +68,10 @@ const Header: React.FC = () => {
                 <ListItem component={Link} to={"/articles"} button onClick={closeDrawer}>
                     <ListItemIcon><DescriptionIcon/></ListItemIcon>
                     <ListItemText primary={"Manage Posts"}/>
+                </ListItem>
+                <ListItem component={Link} to={"/users"} button onClick={closeDrawer}>
+                    <ListItemIcon><PersonIcon/></ListItemIcon>
+                    <ListItemText primary={"Manage Users"}/>
                 </ListItem>
             </List>
         </Drawer>

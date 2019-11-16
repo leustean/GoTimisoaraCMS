@@ -10,6 +10,7 @@ import TagsManager from "./components/TagsManager";
 import Wrapper from "./components/Wrapper";
 import ArticleManager from "./components/ArticleManager";
 import ArticleEditor from "./components/ArticleEditor";
+import UsersManager from "./components/UsersManager";
 
 const App: React.FC = () => {
     return <ThemeWrapper>
@@ -19,6 +20,9 @@ const App: React.FC = () => {
                 <Switch>
                     <Route path="/tags">
                         <TagsManager/>
+                    </Route>
+                    <Route path="/users">
+                        <UsersManager/>
                     </Route>
                     <Route path="/articles">
                         <ArticleManager/>

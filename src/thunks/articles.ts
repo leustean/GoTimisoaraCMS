@@ -1,8 +1,9 @@
 import {ArticleResponse, getArticlesAtPage} from "../helpers/api-calls";
 import {changeArticleInForm, loadArticleInForm, loadArticlesAction} from "../actions/articles";
 import {AppState} from "../store";
-import Article, {Image, ImageGroup, Paragraph, Title} from "../types/Article";
+import Article, {IMAGE, Image, IMAGE_GROUP, ImageGroup, PARAGRAPH, Paragraph, TITLE, Title} from "../types/Article";
 import {DOWN, UP} from "../types/actions";
+import User from "../types/User";
 
 export const loadArticlesAtPageThunk = (pageNumber: number) => (dispatch: (arg0: any) => void) => {
     getArticlesAtPage(pageNumber).then((response: ArticleResponse) => {
@@ -20,11 +21,7 @@ export const loadArticleInFormThunk = (articleId: number) => (dispatch: (arg0: a
             createdAt: `${now.getDay()}/${now.getMonth()}/${now.getFullYear()}`,
             updatedAt: `${now.getDay()}/${now.getMonth()}/${now.getFullYear()}`,
             isVisible: false,
-            author: {
-                email: "",
-                username: "",
-                fullName: ""
-            }
+            author: getState().users.appUser as User
         }));
         return;
     }
@@ -41,6 +38,9 @@ export const loadArticleInFormThunk = (articleId: number) => (dispatch: (arg0: a
 
 export const changeContentInCurrentArticle = (content: Title | Paragraph | Image | ImageGroup, index: number) => (dispatch: (arg0: any) => void, getState: () => AppState) => {
     const currentArticle = getState().articles.currentArticle;
+    if (!currentArticle) {
+        return;
+    }
     const newContents = [...currentArticle.contents];
     newContents.splice(index, 1, content);
     dispatch(changeArticleInForm({
@@ -49,17 +49,66 @@ export const changeContentInCurrentArticle = (content: Title | Paragraph | Image
     }))
 };
 
+export const changeTitleInCurrentArticle = (title: string) => (dispatch: (arg0: any) => void, getState: () => AppState) => {
+    const currentArticle = getState().articles.currentArticle;
+    if (!currentArticle) {
+        return;
+    }
+    dispatch(changeArticleInForm({
+        ...currentArticle,
+        title
+    }))
+};
+
 
 export const addContentInCurrentArticle = (content: Title | Paragraph | Image | ImageGroup) => (dispatch: (arg0: any) => void, getState: () => AppState) => {
     const currentArticle = getState().articles.currentArticle;
+    if (!currentArticle) {
+        return;
+    }
     dispatch(changeArticleInForm({
         ...currentArticle,
         contents: [...currentArticle.contents, content]
     }))
 };
 
+export const addTitleArticle = () => (dispatch: (arg0: any) => void) => {
+    dispatch(addContentInCurrentArticle({
+        type: TITLE,
+        titleText: '',
+        titleVariant: 'h1'
+    }))
+};
+
+export const addParagraphArticle = () => (dispatch: (arg0: any) => void) => {
+    dispatch(addContentInCurrentArticle({
+        type: PARAGRAPH,
+        paragraphContent: ''
+    }))
+};
+
+export const addImageArticle = () => (dispatch: (arg0: any) => void) => {
+    dispatch(addContentInCurrentArticle({
+        type: IMAGE,
+        imageCaption: '',
+        imageLink: '',
+        imageUrl: ''
+    }))
+};
+
+export const addImageGroupArticle = () => (dispatch: (arg0: any) => void) => {
+    dispatch(addContentInCurrentArticle({
+        type: IMAGE_GROUP,
+        imageGroupTitle: '',
+        images: []
+    }))
+};
+
 export const moveContentInCurrentArticle = (index: number, direction: typeof UP | typeof DOWN) => (dispatch: (arg0: any) => void, getState: () => AppState) => {
     const currentArticle = getState().articles.currentArticle;
+    if (!currentArticle) {
+        return;
+    }
     const newArticleContents = [...currentArticle.contents];
     const articleContentToMove = newArticleContents[index];
     newArticleContents.splice(index, 1);
@@ -74,8 +123,33 @@ export const moveContentInCurrentArticle = (index: number, direction: typeof UP 
     }))
 };
 
+export const updateUserInArticles = (user: User) => (dispatch: (arg0: any) => void, getState: () => AppState) => {
+    const articlesState = getState().articles;
+    const articles = articlesState.articles;
+    if (!articles) {
+        return;
+    }
+    const updatedArticles = articles.map((article: Article) => {
+        if (article.author.userId === user.userId) {
+            return {
+                ...article,
+                author: user
+            }
+        }
+        return article
+    });
+    dispatch(loadArticlesAction({
+        articles: updatedArticles,
+        numberOfPages: articlesState.numberOfPages,
+        pageNumber: articlesState.currentPage
+    }))
+};
+
 export const deleteContentInCurrentArticle = (index: number) => (dispatch: (arg0: any) => void, getState: () => AppState) => {
     const currentArticle = getState().articles.currentArticle;
+    if (!currentArticle) {
+        return;
+    }
     const newContents = [...currentArticle.contents];
     newContents.splice(index, 1);
     dispatch(changeArticleInForm({
@@ -85,7 +159,11 @@ export const deleteContentInCurrentArticle = (index: number) => (dispatch: (arg0
 };
 
 export const changeImageInImageGroup = (image: Image, imageIndex: number, imageGroupIndex: number) => (dispatch: (arg0: any) => void, getState: () => AppState) => {
-    const imageGroup = getState().articles.currentArticle.contents[imageGroupIndex] as ImageGroup;
+    const currentArticle = getState().articles.currentArticle;
+    if (!currentArticle) {
+        return;
+    }
+    const imageGroup = currentArticle.contents[imageGroupIndex] as ImageGroup;
     const newImages = [...imageGroup.images];
     newImages.splice(imageIndex, 1, image);
     dispatch(changeContentInCurrentArticle({
@@ -95,7 +173,11 @@ export const changeImageInImageGroup = (image: Image, imageIndex: number, imageG
 };
 
 export const addImageInImageGroup = (image: Image, imageGroupIndex: number) => (dispatch: (arg0: any) => void, getState: () => AppState) => {
-    const imageGroup = getState().articles.currentArticle.contents[imageGroupIndex] as ImageGroup;
+    const currentArticle = getState().articles.currentArticle;
+    if (!currentArticle) {
+        return;
+    }
+    const imageGroup = currentArticle.contents[imageGroupIndex] as ImageGroup;
     dispatch(changeContentInCurrentArticle({
         ...imageGroup,
         images: [...imageGroup.images, image]
@@ -103,7 +185,11 @@ export const addImageInImageGroup = (image: Image, imageGroupIndex: number) => (
 };
 
 export const deleteImageInImageGroup = (imageIndex: number, imageGroupIndex: number) => (dispatch: (arg0: any) => void, getState: () => AppState) => {
-    const imageGroup = getState().articles.currentArticle.contents[imageGroupIndex] as ImageGroup;
+    const currentArticle = getState().articles.currentArticle;
+    if (!currentArticle) {
+        return;
+    }
+    const imageGroup = currentArticle.contents[imageGroupIndex] as ImageGroup;
     const newImages = [...imageGroup.images];
     newImages.splice(imageIndex, 1);
     dispatch(changeContentInCurrentArticle({
@@ -113,7 +199,11 @@ export const deleteImageInImageGroup = (imageIndex: number, imageGroupIndex: num
 };
 
 export const moveImageInImageGroup = (imageIndex: number, direction: typeof UP | typeof DOWN, imageGroupIndex: number) => (dispatch: (arg0: any) => void, getState: () => AppState) => {
-    const imageGroup = getState().articles.currentArticle.contents[imageGroupIndex] as ImageGroup;
+    const currentArticle = getState().articles.currentArticle;
+    if (!currentArticle) {
+        return;
+    }
+    const imageGroup = currentArticle.contents[imageGroupIndex] as ImageGroup;
     const newArticleContents = [...imageGroup.images];
     const articleContentToMove = newArticleContents[imageIndex];
     newArticleContents.splice(imageIndex, 1);

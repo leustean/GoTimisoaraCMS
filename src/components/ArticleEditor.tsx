@@ -5,7 +5,12 @@ import {AppState} from "../store";
 import {connect} from "react-redux";
 import Article, {IMAGE, Image, IMAGE_GROUP, ImageGroup, PARAGRAPH, Paragraph, TITLE, Title} from "../types/Article";
 import {useParams} from "react-router-dom"
-import {addContentInCurrentArticle, loadArticleInFormThunk} from "../thunks/articles";
+import {
+    addImageArticle, addImageGroupArticle,
+    addParagraphArticle,
+    addTitleArticle, changeTitleInCurrentArticle,
+    loadArticleInFormThunk
+} from "../thunks/articles";
 import LoadingAnimation from "./LoadingAnimation";
 import Card from "@material-ui/core/Card";
 import makeStyles from "@material-ui/core/styles/makeStyles";
@@ -15,6 +20,7 @@ import TitleEditor from "./ArticleContent/TitleEditor";
 import ParagraphEditor from "./ArticleContent/ParagraphEditor";
 import ImageEditor from "./ArticleContent/ImageEditor";
 import ImageGroupEditor from "./ArticleContent/ImageGroupEditor";
+import {green} from "@material-ui/core/colors";
 
 // noinspection TypeScriptValidateJSTypes
 const useStyle = makeStyles(theme => ({
@@ -26,6 +32,12 @@ const useStyle = makeStyles(theme => ({
     newButton: {
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1)
+    },
+    deleteButton: {
+        backgroundColor: theme.palette.error.main
+    },
+    saveButton: {
+        backgroundColor: green.A700
     }
 }));
 
@@ -71,35 +83,23 @@ const ArticleEditor = ({currentArticle, dispatch}: ArticleEditorProps) => {
     });
 
     const addTitle = () => {
-        dispatch(addContentInCurrentArticle({
-            type: TITLE,
-            titleText: '',
-            titleVariant: 'h1'
-        }))
+        dispatch(addTitleArticle())
     };
 
     const addParagraph = () => {
-        dispatch(addContentInCurrentArticle({
-            type: PARAGRAPH,
-            paragraphContent: ''
-        }))
+        dispatch(addParagraphArticle())
     };
 
     const addImage = () => {
-        dispatch(addContentInCurrentArticle({
-            type: IMAGE,
-            imageCaption: '',
-            imageLink: '',
-            imageUrl: ''
-        }))
+        dispatch(addImageArticle())
     };
 
     const addImageGroup = () => {
-        dispatch(addContentInCurrentArticle({
-            type: IMAGE_GROUP,
-            imageGroupTitle: '',
-            images: []
-        }))
+        dispatch(addImageGroupArticle())
+    };
+
+    const changeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(changeTitleInCurrentArticle(event.target.value))
     };
 
     return <Container maxWidth={"md"}>
@@ -112,6 +112,7 @@ const ArticleEditor = ({currentArticle, dispatch}: ArticleEditorProps) => {
                             fullWidth
                             variant={"outlined"}
                             value={currentArticle.title}
+                            onChange={changeTitle}
                         />
                     </CardContent>
                 </Card>
@@ -155,6 +156,22 @@ const ArticleEditor = ({currentArticle, dispatch}: ArticleEditorProps) => {
                             onClick={addImageGroup}
                         >
                             Add Image Group
+                        </Button>
+                        <Button
+                            className={classes.saveButton}
+                            variant="contained"
+                            component="label"
+                            color={"primary"}
+                        >
+                            Save
+                        </Button>
+                        <Button
+                            className={classes.deleteButton}
+                            variant="contained"
+                            component="label"
+                            color={"primary"}
+                        >
+                            Delete
                         </Button>
                     </CardContent>
                 </Card>

@@ -1,12 +1,14 @@
 import {combineReducers} from "redux";
 import articlesReducer from "../reducers/articles";
 import tagsReducer from "../reducers/tags";
+import usersReducer from "../reducers/users";
 import thunk from "redux-thunk";
 import {createStore, applyMiddleware, compose} from 'redux';
 
 const rootReducer = combineReducers({
     articles: articlesReducer,
-    tags: tagsReducer
+    tags: tagsReducer,
+    users: usersReducer
 });
 
 // @ts-ignore

@@ -1,5 +1,6 @@
 import Tag from "../types/Tag";
 import Article, {IMAGE, IMAGE_GROUP, PARAGRAPH, TITLE} from "../types/Article";
+import User from "../types/User";
 
 let tags = [
     {tagId: 1, tagName: "Food"},
@@ -84,9 +85,10 @@ let articles: Array<Article> = [
         updatedAt: "30/10/2019",
         isVisible: false,
         author: {
-            email: "author@go-timisoara.ro",
-            username: "author",
-            fullName: "Author Name"
+            userId: 1,
+            email: "author1@go-timisoara.ro",
+            username: "author1",
+            fullName: "Author Name 1"
         }
     }
 ];
@@ -99,4 +101,66 @@ export function getArticlesAtPage(pageNumber: number): Promise<ArticleResponse> 
             pageNumber: pageNumber
         });
     }, 1000))
+}
+
+let users = [
+    {
+        userId: 1,
+        email: "author1@go-timisoara.ro",
+        username: "author1",
+        fullName: "Author Name 1"
+    },
+    {
+        userId: 2,
+        email: "author2@go-timisoara.ro",
+        username: "author2",
+        fullName: "Author Name 2"
+    },
+    {
+        userId: 3,
+        email: "author3@go-timisoara.ro",
+        username: "author3",
+        fullName: "Author Name 3"
+    },
+    {
+        userId: 4,
+        email: "author4@go-timisoara.ro",
+        username: "author4",
+        fullName: "Author Name 4"
+    }
+];
+
+export function getAllUsers(): Promise<Array<User>> {
+    return new Promise(resolve => setTimeout(() => {
+        resolve(users)
+    }, 500))
+}
+
+export function createUser(userToCreate: User): Promise<Array<User>> {
+    let maxId = 0;
+    users.forEach((user: User) => {
+        if (user.userId > maxId) {
+            maxId = user.userId;
+        }
+    });
+    maxId += 1;
+    users = [{...userToCreate, userId: maxId}, ...users];
+    return new Promise(resolve => setTimeout(() => {
+        resolve(users)
+    }, 500))
+}
+
+export function updateUser(userToUpdate: User): Promise<Array<User>> {
+    users = users.filter((user: User) => user.userId !== userToUpdate.userId);
+    users.unshift({...userToUpdate});
+    return new Promise(resolve => setTimeout(() => {
+        resolve(users)
+    }, 500))
+}
+
+export function deleteUser(userToDelete: User): Promise<Array<User>> {
+    users = users.filter((user: User) => user.userId !== userToDelete.userId);
+    return new Promise(resolve => setTimeout(() => {
+        resolve(users)
+    }, 500))
 }

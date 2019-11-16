@@ -26,7 +26,7 @@ const useStyle = makeStyles(theme => ({
 }));
 
 interface PositionButtonsProps {
-    currentArticle: Article,
+    currentArticle: Article | null,
     position: number,
     parentPosition?: number | null
     dispatch: (arg0: any) => void
@@ -35,6 +35,10 @@ interface PositionButtonsProps {
 
 const ActionButtons = ({position, dispatch, currentArticle, parentPosition = null}: PositionButtonsProps) => {
     const classes = useStyle();
+
+    if (!currentArticle) {
+        return null;
+    }
 
     let deleteContent, moveUp, moveDown, arrayToCheck;
     if (parentPosition !== null) {
