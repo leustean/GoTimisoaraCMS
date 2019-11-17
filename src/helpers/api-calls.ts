@@ -1,6 +1,6 @@
 import Tag from "../types/Tag";
 import Article, {IMAGE, IMAGE_GROUP, PARAGRAPH, TITLE} from "../types/Article";
-import User from "../types/User";
+import User, {LoginFormUser} from "../types/User";
 
 let tags = [
     {tagId: 1, tagName: "Food"},
@@ -103,6 +103,35 @@ export function getArticlesAtPage(pageNumber: number): Promise<ArticleResponse> 
     }, 1000))
 }
 
+export function createArticle(articleToCreate: Article): Promise<Array<Article>> {
+    let maxId = 0;
+    articles.forEach((article: Article) => {
+        if (article.articleId > maxId) {
+            maxId = article.articleId;
+        }
+    });
+    maxId += 1;
+    articles = [{...articleToCreate, articleId: maxId}, ...articles];
+    return new Promise(resolve => setTimeout(() => {
+        resolve(articles)
+    }, 500))
+}
+
+export function updateArticle(articleToUpdate: Article): Promise<Array<Article>> {
+    articles = articles.filter((article: Article) => article.articleId !== articleToUpdate.articleId);
+    articles.unshift({...articleToUpdate});
+    return new Promise(resolve => setTimeout(() => {
+        resolve(articles)
+    }, 500))
+}
+
+export function deleteArticle(articleToDelete: Article): Promise<Array<Article>> {
+    articles = articles.filter((article: Article) => article.articleId !== articleToDelete.articleId);
+    return new Promise(resolve => setTimeout(() => {
+        resolve(articles)
+    }, 500))
+}
+
 let users = [
     {
         userId: 1,
@@ -129,6 +158,16 @@ let users = [
         fullName: "Author Name 4"
     }
 ];
+
+export function authenticateUser(loginFormUser: LoginFormUser): Promise<User> {
+    const foundUser = users.find((user: User) => user.username === loginFormUser.username);
+    return new Promise((resolve, reject) => setTimeout(() => {
+        if (foundUser) {
+            resolve(foundUser)
+        }
+        reject()
+    }, 500))
+}
 
 export function getAllUsers(): Promise<Array<User>> {
     return new Promise(resolve => setTimeout(() => {

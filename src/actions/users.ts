@@ -1,11 +1,11 @@
-import User from "../types/User";
+import User, {LoginFormUser} from "../types/User";
 import {
     CHANGE_USER_IN_FORM,
     CLOSE_USER_MODAL,
     CREATE_NEW_USER, FAIL_SUBMIT_USER_FORM,
     LOAD_USER_IN_FORM,
-    LOAD_USERS,
-    OPEN_USER_MODAL, SUBMIT_USER_FORM, SUCCESS_SUBMIT_USER_FORM
+    LOAD_USERS, LOGIN_USER,
+    OPEN_USER_MODAL, SUBMIT_USER_FORM, SUCCESS_SUBMIT_USER_FORM, UPDATE_LOGIN_FORM
 } from "../types/actions";
 
 export function loadUsers(users: Array<User>) {
@@ -62,5 +62,19 @@ export function successUserForm() {
 export function failUserForm() {
     return {
         type: FAIL_SUBMIT_USER_FORM
+    }
+}
+
+export function loginUser(user: User) {
+    return {
+        type: LOGIN_USER,
+        user
+    }
+}
+
+export function updateLoginForm(user: LoginFormUser) {
+    return {
+        type: UPDATE_LOGIN_FORM,
+        user
     }
 }

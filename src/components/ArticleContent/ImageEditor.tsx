@@ -9,6 +9,7 @@ import {Button} from "@material-ui/core";
 import PositionButtons from "./ActionButtons";
 import {changeContentInCurrentArticle, changeImageInImageGroup} from "../../thunks/articles";
 import CardActions from "@material-ui/core/CardActions";
+import {AppState} from "../../store";
 
 // noinspection TypeScriptValidateJSTypes
 const useStyle = makeStyles(theme => ({
@@ -28,11 +29,12 @@ interface ImageProps {
     position: number,
     image: Image,
     dispatch: (arg0: any) => void
-    parentPosition?: number | null
+    parentPosition?: number | null,
+    isSubmitting: boolean
 }
 
 
-const ImageEditor = ({position, image, dispatch, parentPosition = null}: ImageProps) => {
+const ImageEditor = ({position, image, dispatch, isSubmitting, parentPosition = null}: ImageProps) => {
     const classes = useStyle();
 
     let changeCaption, changeLink, changeImage;
@@ -104,6 +106,7 @@ const ImageEditor = ({position, image, dispatch, parentPosition = null}: ImagePr
         <CardContent>
             {image.imageUrl !== '' && <img className={classes.image} alt={image.imageCaption} src={image.imageUrl}/>}
             <Button
+                disabled={isSubmitting}
                 className={classes.input}
                 variant="contained"
                 component="label"
@@ -111,12 +114,14 @@ const ImageEditor = ({position, image, dispatch, parentPosition = null}: ImagePr
             >
                 Upload Image
                 <input
+                    disabled={isSubmitting}
                     onChange={changeImage}
                     type="file"
                     style={{display: "none"}}
                 />
             </Button>
             <TextField
+                disabled={isSubmitting}
                 onChange={changeCaption}
                 className={classes.input}
                 fullWidth
@@ -126,6 +131,7 @@ const ImageEditor = ({position, image, dispatch, parentPosition = null}: ImagePr
                 value={image.imageCaption}
             />
             <TextField
+                disabled={isSubmitting}
                 onChange={changeLink}
                 className={classes.input}
                 fullWidth
@@ -141,4 +147,8 @@ const ImageEditor = ({position, image, dispatch, parentPosition = null}: ImagePr
     </Card>
 };
 
-export default connect()(ImageEditor);
+const mapStateToProps = (state: AppState) => ({
+    isSubmitting: state.articles.isSubmitting
+});
+
+export default connect(mapStateToProps)(ImageEditor);

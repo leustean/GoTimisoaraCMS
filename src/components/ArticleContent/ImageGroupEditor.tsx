@@ -11,6 +11,7 @@ import PositionButtons from "./ActionButtons";
 import {addImageInImageGroup, changeContentInCurrentArticle} from "../../thunks/articles";
 import CardActions from "@material-ui/core/CardActions";
 import Grid from "@material-ui/core/Grid";
+import {AppState} from "../../store";
 
 // noinspection TypeScriptValidateJSTypes
 const useStyle = makeStyles(theme => ({
@@ -23,11 +24,12 @@ const useStyle = makeStyles(theme => ({
 interface ImageGroupProps {
     position: number,
     imageGroup: ImageGroup,
-    dispatch: (arg0: any) => void
+    dispatch: (arg0: any) => void,
+    isSubmitting: boolean
 }
 
 
-const ImageGroupEditor = ({position, imageGroup, dispatch}: ImageGroupProps) => {
+const ImageGroupEditor = ({position, imageGroup, isSubmitting, dispatch}: ImageGroupProps) => {
     const classes = useStyle();
 
     const images = imageGroup.images.map((image: Image, index: number) => {
@@ -53,6 +55,7 @@ const ImageGroupEditor = ({position, imageGroup, dispatch}: ImageGroupProps) => 
     return <Card>
         <CardContent>
             <TextField
+                disabled={isSubmitting}
                 className={classes.input}
                 fullWidth
                 label="Image Group Title"
@@ -67,6 +70,7 @@ const ImageGroupEditor = ({position, imageGroup, dispatch}: ImageGroupProps) => 
             <Grid container justify={"space-between"}>
                 <Grid item>
                     <Button
+                        disabled={isSubmitting}
                         variant="contained"
                         component="label"
                         color={"primary"}
@@ -83,4 +87,8 @@ const ImageGroupEditor = ({position, imageGroup, dispatch}: ImageGroupProps) => 
     </Card>
 };
 
-export default connect()(ImageGroupEditor);
+const mapStateToProps = (state: AppState) => ({
+    isSubmitting: state.articles.isSubmitting
+});
+
+export default connect(mapStateToProps)(ImageGroupEditor);

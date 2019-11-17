@@ -1,7 +1,7 @@
 // @ts-ignore
 import Tag from "./Tag";
 import Article from "./Article";
-import User from "./User";
+import User, {LoginFormUser} from "./User";
 
 export const LOAD_TAGS = "LOAD_TAGS";
 export const LOAD_TAG_IN_FORM = "LOAD_TAG_IN_FORM";
@@ -21,6 +21,7 @@ export const SUBMIT_ARTICLE_FORM = "SUBMIT_ARTICLE_FORM";
 export const CHANGE_ARTICLE_IN_FORM = "CHANGE_ARTICLE_IN_FORM";
 export const FAIL_SUBMIT_ARTICLE_FORM = "FAIL_SUBMIT_ARTICLE_FORM";
 export const SUCCESS_SUBMIT_ARTICLE_FORM = "SUCCESS_SUBMIT_ARTICLE_FORM";
+export const CLEAR_ARTICLE = "CLEAR_ARTICLE";
 
 export const LOAD_CURRENT_USER = "LOAD_CURRENT_USER";
 export const LOAD_USERS = "LOAD_USERS";
@@ -34,6 +35,8 @@ export const OPEN_USER_MODAL = "OPEN_USER_MODAL";
 export const CLOSE_USER_MODAL = "CLOSE_USER_MODAL";
 
 export const CREATE_NEW_USER = "CREATE_NEW_USER";
+export const LOGIN_USER = "LOGIN_USER";
+export const UPDATE_LOGIN_FORM = "UPDATE_LOGIN_FORM";
 
 export interface LoadTags {
     type: typeof LOAD_TAGS,
@@ -103,6 +106,10 @@ export interface SuccessSubmitArticleForm {
     type: typeof SUCCESS_SUBMIT_ARTICLE_FORM
 }
 
+export interface DeleteArticle {
+    type: typeof CLEAR_ARTICLE
+}
+
 export const UP = "UP";
 export const DOWN = "DOWN";
 
@@ -150,6 +157,16 @@ export interface CloseUserModal {
     type: typeof CLOSE_USER_MODAL
 }
 
+export interface LoginUser {
+    type: typeof LOGIN_USER,
+    user: User
+}
+
+export interface UpdateLoginForm {
+    type: typeof UPDATE_LOGIN_FORM,
+    user: LoginFormUser
+}
+
 export type ArticleTypes =
     LoadArticles
     | LoadArticleInForm
@@ -157,6 +174,7 @@ export type ArticleTypes =
     | SubmitArticleForm
     | SuccessSubmitArticleForm
     | FailSubmitArticleForm
+    | DeleteArticle
 
 export type TagTypes =
     LoadTags
@@ -180,3 +198,5 @@ export type UserTypes =
     | CloseUserModal
     | CreateNewUser
     | LoadCurrentUser
+    | LoginUser
+    | UpdateLoginForm

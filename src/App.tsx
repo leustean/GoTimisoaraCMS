@@ -11,6 +11,8 @@ import Wrapper from "./components/Wrapper";
 import ArticleManager from "./components/ArticleManager";
 import ArticleEditor from "./components/ArticleEditor";
 import UsersManager from "./components/UsersManager";
+import PrivateRoute from "./components/PrivateRoute";
+import LoginForm from "./components/LoginForm";
 
 const App: React.FC = () => {
     return <ThemeWrapper>
@@ -18,21 +20,24 @@ const App: React.FC = () => {
             <Header/>
             <Wrapper>
                 <Switch>
-                    <Route path="/tags">
+                    <PrivateRoute path="/tags">
                         <TagsManager/>
-                    </Route>
-                    <Route path="/users">
+                    </PrivateRoute>
+                    <PrivateRoute path="/users">
                         <UsersManager/>
-                    </Route>
-                    <Route path="/articles">
+                    </PrivateRoute>
+                    <PrivateRoute path="/articles">
                         <ArticleManager/>
-                    </Route>
-                    <Route path="/article/:id">
+                    </PrivateRoute>
+                    <PrivateRoute path="/article/:id">
                         <ArticleEditor/>
+                    </PrivateRoute>
+                    <Route path="/login">
+                        <LoginForm/>
                     </Route>
-                    <Route path="/">
+                    <PrivateRoute path="/">
                         <div/>
-                    </Route>
+                    </PrivateRoute>
                 </Switch>
             </Wrapper>
         </BrowserRouter>

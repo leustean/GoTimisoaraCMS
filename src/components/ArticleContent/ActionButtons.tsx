@@ -29,11 +29,12 @@ interface PositionButtonsProps {
     currentArticle: Article | null,
     position: number,
     parentPosition?: number | null
-    dispatch: (arg0: any) => void
+    dispatch: (arg0: any) => void,
+    isSubmitting: boolean
 }
 
 
-const ActionButtons = ({position, dispatch, currentArticle, parentPosition = null}: PositionButtonsProps) => {
+const ActionButtons = ({position, dispatch, currentArticle, isSubmitting, parentPosition = null}: PositionButtonsProps) => {
     const classes = useStyle();
 
     if (!currentArticle) {
@@ -75,6 +76,7 @@ const ActionButtons = ({position, dispatch, currentArticle, parentPosition = nul
     return <Grid container justify={"flex-end"}>
         <Grid item>
             <Button
+                disabled={isSubmitting}
                 className={classes.deleteButton}
                 variant="contained"
                 onClick={deleteContent}
@@ -85,6 +87,7 @@ const ActionButtons = ({position, dispatch, currentArticle, parentPosition = nul
 
         {position !== 0 && <Grid item className={classes.directionButton}>
             <Button
+                disabled={isSubmitting}
                 variant="contained"
                 color={"primary"}
                 onClick={moveUp}
@@ -94,6 +97,7 @@ const ActionButtons = ({position, dispatch, currentArticle, parentPosition = nul
         </Grid>}
         {arrayToCheck.length !== (position + 1) && <Grid item className={classes.directionButton}>
             <Button
+                disabled={isSubmitting}
                 variant="contained"
                 color={"primary"}
                 onClick={moveDown}
@@ -106,6 +110,7 @@ const ActionButtons = ({position, dispatch, currentArticle, parentPosition = nul
 
 const mapStateToProps = (state: AppState) => ({
     currentArticle: state.articles.currentArticle,
+    isSubmitting: state.articles.isSubmitting
 });
 
 export default connect(mapStateToProps)(ActionButtons);

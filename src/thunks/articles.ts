@@ -1,5 +1,17 @@
-import {ArticleResponse, getArticlesAtPage} from "../helpers/api-calls";
-import {changeArticleInForm, loadArticleInForm, loadArticlesAction} from "../actions/articles";
+import {
+    ArticleResponse,
+    createArticle,
+    deleteArticle,
+    getArticlesAtPage,
+    updateArticle,
+} from "../helpers/api-calls";
+import {
+    changeArticleInForm, clearArticleForm, failArticleForm,
+    loadArticleInForm,
+    loadArticlesAction,
+    submitArticleForm,
+    successArticleForm
+} from "../actions/articles";
 import {AppState} from "../store";
 import Article, {IMAGE, Image, IMAGE_GROUP, ImageGroup, PARAGRAPH, Paragraph, TITLE, Title} from "../types/Article";
 import {DOWN, UP} from "../types/actions";
@@ -18,8 +30,8 @@ export const loadArticleInFormThunk = (articleId: number) => (dispatch: (arg0: a
             articleId: 0,
             title: '',
             contents: [],
-            createdAt: `${now.getDay()}/${now.getMonth()}/${now.getFullYear()}`,
-            updatedAt: `${now.getDay()}/${now.getMonth()}/${now.getFullYear()}`,
+            createdAt: `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`,
+            updatedAt: `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`,
             isVisible: false,
             author: getState().users.appUser as User
         }));
@@ -27,10 +39,12 @@ export const loadArticleInFormThunk = (articleId: number) => (dispatch: (arg0: a
     }
     const articles = getState().articles.articles;
     if (!articles) {
+        dispatch(failArticleForm());
         return;
     }
     const articleToLoad = articles.find((article: Article) => article.articleId === articleId);
     if (!articleToLoad) {
+        dispatch(failArticleForm());
         return;
     }
     dispatch(loadArticleInForm(articleToLoad));
@@ -60,6 +74,16 @@ export const changeTitleInCurrentArticle = (title: string) => (dispatch: (arg0: 
     }))
 };
 
+export const changeIsVisibleInCurrentArticle = (isVisible: boolean) => (dispatch: (arg0: any) => void, getState: () => AppState) => {
+    const currentArticle = getState().articles.currentArticle;
+    if (!currentArticle) {
+        return;
+    }
+    dispatch(changeArticleInForm({
+        ...currentArticle,
+        isVisible
+    }))
+};
 
 export const addContentInCurrentArticle = (content: Title | Paragraph | Image | ImageGroup) => (dispatch: (arg0: any) => void, getState: () => AppState) => {
     const currentArticle = getState().articles.currentArticle;
@@ -216,4 +240,36 @@ export const moveImageInImageGroup = (imageIndex: number, direction: typeof UP |
         ...imageGroup,
         images: newArticleContents
     }, imageGroupIndex))
+};
+
+export const saveArticleThunk = (article: Article) => (dispatch: (arg0: any) => void, getState: () => AppState) => {
+    const articlesState = getState().articles;
+    dispatch(submitArticleForm());
+    const upsertPromise = article.articleId ? updateArticle(article) : createArticle(article);
+    upsertPromise.then((articles: Array<Article>) => {
+        dispatch(loadArticlesAction({
+            articles,
+            numberOfPages: articlesState.numberOfPages,
+            pageNumber: articlesState.currentPage
+        }));
+        dispatch(successArticleForm());
+    }).catch(() => {
+        dispatch(failArticleForm())
+    });
+};
+
+export const deleteArticleThunk = (article: Article) => (dispatch: (arg0: any) => void, getState: () => AppState) => {
+    const articlesState = getState().articles;
+    dispatch(submitArticleForm());
+    deleteArticle(article).then((articles: Array<Article>) => {
+        dispatch(loadArticlesAction({
+            articles,
+            numberOfPages: articlesState.numberOfPages,
+            pageNumber: articlesState.currentPage
+        }));
+        dispatch(clearArticleForm());
+        dispatch(successArticleForm());
+    }).catch(() => {
+        dispatch(failArticleForm())
+    });
 };

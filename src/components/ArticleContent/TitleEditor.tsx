@@ -9,6 +9,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import PositionButtons from "./ActionButtons";
 import {changeContentInCurrentArticle} from "../../thunks/articles";
 import CardActions from "@material-ui/core/CardActions";
+import {AppState} from "../../store";
 
 // noinspection TypeScriptValidateJSTypes
 const useStyle = makeStyles(theme => ({
@@ -21,14 +22,15 @@ const useStyle = makeStyles(theme => ({
 interface TitleProps {
     position: number,
     title: Title,
-    dispatch: (arg0: any) => void
+    dispatch: (arg0: any) => void,
+    isSubmitting: boolean
 }
 
 const titleVariants = [
     'h1', 'h2', 'h3', 'h4', 'h5', 'h6'
 ];
 
-const TitleEditor = ({position, title, dispatch}: TitleProps) => {
+const TitleEditor = ({position, title, isSubmitting, dispatch}: TitleProps) => {
     const classes = useStyle();
 
     const changeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,6 +50,7 @@ const TitleEditor = ({position, title, dispatch}: TitleProps) => {
     return <Card>
         <CardContent>
             <TextField
+                disabled={isSubmitting}
                 className={classes.input}
                 fullWidth
                 label="Title Text"
@@ -56,6 +59,7 @@ const TitleEditor = ({position, title, dispatch}: TitleProps) => {
                 onChange={changeTitle}
             />
             <TextField
+                disabled={isSubmitting}
                 className={classes.input}
                 fullWidth
                 select
@@ -77,4 +81,8 @@ const TitleEditor = ({position, title, dispatch}: TitleProps) => {
     </Card>
 };
 
-export default connect()(TitleEditor);
+const mapStateToProps = (state: AppState) => ({
+    isSubmitting: state.articles.isSubmitting
+});
+
+export default connect(mapStateToProps)(TitleEditor);

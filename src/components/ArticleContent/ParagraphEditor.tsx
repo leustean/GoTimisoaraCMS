@@ -8,6 +8,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import PositionButtons from "./ActionButtons";
 import {changeContentInCurrentArticle} from "../../thunks/articles";
 import CardActions from "@material-ui/core/CardActions";
+import {AppState} from "../../store";
 
 // noinspection TypeScriptValidateJSTypes
 const useStyle = makeStyles(theme => ({
@@ -20,11 +21,12 @@ const useStyle = makeStyles(theme => ({
 interface ParagraphProps {
     position: number,
     paragraph: Paragraph,
-    dispatch: (arg0: any) => void
+    dispatch: (arg0: any) => void,
+    isSubmitting: boolean
 }
 
 
-const ParagraphEditor = ({position, paragraph, dispatch}: ParagraphProps) => {
+const ParagraphEditor = ({position, paragraph, isSubmitting, dispatch}: ParagraphProps) => {
     const classes = useStyle();
 
     const changeParagraph = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,6 +39,7 @@ const ParagraphEditor = ({position, paragraph, dispatch}: ParagraphProps) => {
     return <Card>
         <CardContent>
             <TextField
+                disabled={isSubmitting}
                 className={classes.input}
                 fullWidth
                 label="Paragraph Text"
@@ -52,4 +55,8 @@ const ParagraphEditor = ({position, paragraph, dispatch}: ParagraphProps) => {
     </Card>
 };
 
-export default connect()(ParagraphEditor);
+const mapStateToProps = (state: AppState) => ({
+    isSubmitting: state.articles.isSubmitting
+});
+
+export default connect(mapStateToProps)(ParagraphEditor);

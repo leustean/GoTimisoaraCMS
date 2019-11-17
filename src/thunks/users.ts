@@ -1,11 +1,11 @@
-import {createUser, deleteUser, getAllUsers, updateUser} from "../helpers/api-calls";
-import User from "../types/User";
+import {createUser, deleteUser, getAllUsers, authenticateUser, updateUser} from "../helpers/api-calls";
+import User, {LoginFormUser} from "../types/User";
 import {
     closeUserModal,
     createNewUser,
     failUserForm,
     loadUserInForm,
-    loadUsers,
+    loadUsers, loginUser,
     openUserModal,
     submitUserForm,
     successUserForm
@@ -47,6 +47,15 @@ export const deleteUserThunk = (user: User) => (dispatch: (arg0: any) => void) =
         dispatch(loadUsers(users));
         dispatch(successUserForm());
         dispatch(closeUserModal())
+    }).catch(() => {
+        dispatch(failUserForm())
+    });
+};
+
+export const loginUserThunk = (loginFormUser: LoginFormUser) => (dispatch: (arg0: any) => void) => {
+    dispatch(submitUserForm());
+    authenticateUser(loginFormUser).then((user: User) => {
+        dispatch(loginUser(user));
     }).catch(() => {
         dispatch(failUserForm())
     });

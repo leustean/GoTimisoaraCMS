@@ -14,9 +14,15 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import {Link} from "react-router-dom";
+import ArticleManagerMessage from "./ArticleManagerMessage";
+import {clearArticleForm, loadArticleInForm} from "../actions/articles";
 
 // noinspection TypeScriptValidateJSTypes
 const useStyle = makeStyles(theme => ({
+    item: {
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+    },
     articleCard: {
         margin: theme.spacing(2)
     }
@@ -24,10 +30,11 @@ const useStyle = makeStyles(theme => ({
 
 interface ArticleManagerProps {
     articles: Array<Article> | null,
+    message: string,
     dispatch: (arg0: any) => void
 }
 
-const ArticleManager = ({articles, dispatch}: ArticleManagerProps) => {
+const ArticleManager = ({articles, message, dispatch}: ArticleManagerProps) => {
     const classes = useStyle();
 
     if (articles === null) {
@@ -56,6 +63,9 @@ const ArticleManager = ({articles, dispatch}: ArticleManagerProps) => {
                                 color={"primary"}
                                 variant={"contained"}
                                 size="large"
+                                onClick={() => {
+                                    dispatch(loadArticleInForm(article))
+                                }}
                                 component={Link}
                                 to={`/article/${article.articleId}`}
                             >
@@ -69,17 +79,26 @@ const ArticleManager = ({articles, dispatch}: ArticleManagerProps) => {
     });
 
     return <Grid container direction={"column"}>
-        <Grid item container justify={"center"}>
+        {!!message && <Grid item className={classes.item}>
+            <Card>
+                <CardContent>
+                    <ArticleManagerMessage/>
+                </CardContent>
+            </Card>
+        </Grid>}
+        <Grid item container justify={"center"} className={classes.item}>
             <Grid item>
                 <ButtonGroup variant="contained" size="large">
                     <ArticlePagination/>
-                    <Button color={"primary"} component={Link} to={"/article/0"}>
+                    <Button color={"primary"} component={Link} to={"/article/0"} onClick={() => {
+                        dispatch(clearArticleForm())
+                    }}>
                         Create New
                     </Button>
                 </ButtonGroup>
             </Grid>
         </Grid>
-        <Grid item container>
+        <Grid item container className={classes.item}>
             {articleComponents}
         </Grid>
     </Grid>
@@ -87,6 +106,7 @@ const ArticleManager = ({articles, dispatch}: ArticleManagerProps) => {
 
 const mapStateToProps = (state: AppState) => ({
     articles: state.articles.articles,
+    message: state.articles.message
 });
 
 export default connect(mapStateToProps)(ArticleManager);

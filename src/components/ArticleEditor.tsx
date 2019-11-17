@@ -8,8 +8,8 @@ import {useParams} from "react-router-dom"
 import {
     addImageArticle, addImageGroupArticle,
     addParagraphArticle,
-    addTitleArticle, changeTitleInCurrentArticle,
-    loadArticleInFormThunk
+    addTitleArticle, changeIsVisibleInCurrentArticle, changeTitleInCurrentArticle, deleteArticleThunk,
+    loadArticleInFormThunk, saveArticleThunk
 } from "../thunks/articles";
 import LoadingAnimation from "./LoadingAnimation";
 import Card from "@material-ui/core/Card";
@@ -21,6 +21,10 @@ import ParagraphEditor from "./ArticleContent/ParagraphEditor";
 import ImageEditor from "./ArticleContent/ImageEditor";
 import ImageGroupEditor from "./ArticleContent/ImageGroupEditor";
 import {green} from "@material-ui/core/colors";
+import MenuItem from "@material-ui/core/MenuItem";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import ArticleManagerMessage from "./ArticleManagerMessage";
+import {Redirect} from "react-router-dom"
 
 // noinspection TypeScriptValidateJSTypes
 const useStyle = makeStyles(theme => ({
@@ -34,15 +38,26 @@ const useStyle = makeStyles(theme => ({
         marginRight: theme.spacing(1)
     },
     deleteButton: {
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
         backgroundColor: theme.palette.error.main
     },
     saveButton: {
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
         backgroundColor: green.A700
+    },
+    input: {
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2)
     }
 }));
 
 interface ArticleEditorProps {
     currentArticle: Article | null,
+    isSubmitting: boolean,
+    message: string,
+    isSuccess: boolean,
     dispatch: (arg0: any) => void
 }
 
@@ -66,10 +81,14 @@ const mapObjectToComponent = (content: Title | Paragraph | Image | ImageGroup, i
     return null;
 };
 
-const ArticleEditor = ({currentArticle, dispatch}: ArticleEditorProps) => {
+const ArticleEditor = ({currentArticle, isSubmitting, message, isSuccess, dispatch}: ArticleEditorProps) => {
     const classes = useStyle();
     const {id} = useParams();
     const parsedId = parseInt(id ? id : "0");
+
+    if (isSuccess || (currentArticle === null && message)) {
+        return <Redirect to={"/articles"}/>
+    }
 
     if (currentArticle === null || currentArticle.articleId !== parsedId) {
         dispatch(loadArticleInFormThunk(parsedId));
@@ -102,18 +121,56 @@ const ArticleEditor = ({currentArticle, dispatch}: ArticleEditorProps) => {
         dispatch(changeTitleInCurrentArticle(event.target.value))
     };
 
+    const changeIsVisible = (event: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(changeIsVisibleInCurrentArticle(!!event.target.valueAsNumber))
+    };
+
+    const saveArticle = () => {
+        dispatch(saveArticleThunk(currentArticle))
+    };
+
+    const deleteArticle = () => {
+        dispatch(deleteArticleThunk(currentArticle))
+    };
+
     return <Container maxWidth={"md"}>
         <Grid container direction={"column"}>
+            {!!message && <Grid item className={classes.entry}>
+                <Card>
+                    <CardContent>
+                        <ArticleManagerMessage/>
+                    </CardContent>
+                </Card>
+            </Grid>}
             <Grid item className={classes.entry}>
                 <Card>
                     <CardContent>
                         <TextField
+                            disabled={isSubmitting}
+                            className={classes.input}
                             label={"Article Title"}
                             fullWidth
                             variant={"outlined"}
                             value={currentArticle.title}
                             onChange={changeTitle}
                         />
+                        <TextField
+                            disabled={isSubmitting}
+                            className={classes.input}
+                            fullWidth
+                            select
+                            label={"Is Visible"}
+                            value={currentArticle.isVisible ? 1 : 0}
+                            variant="outlined"
+                            onChange={changeIsVisible}
+                        >
+                            <MenuItem value={1}>
+                                Visible
+                            </MenuItem>
+                            <MenuItem value={0}>
+                                Hidden
+                            </MenuItem>
+                        </TextField>
                     </CardContent>
                 </Card>
             </Grid>
@@ -122,6 +179,7 @@ const ArticleEditor = ({currentArticle, dispatch}: ArticleEditorProps) => {
                 <Card>
                     <CardContent>
                         <Button
+                            disabled={isSubmitting}
                             className={classes.newButton}
                             variant="contained"
                             component="label"
@@ -131,6 +189,7 @@ const ArticleEditor = ({currentArticle, dispatch}: ArticleEditorProps) => {
                             Add Title
                         </Button>
                         <Button
+                            disabled={isSubmitting}
                             className={classes.newButton}
                             variant="contained"
                             component="label"
@@ -140,6 +199,7 @@ const ArticleEditor = ({currentArticle, dispatch}: ArticleEditorProps) => {
                             Add Paragraph
                         </Button>
                         <Button
+                            disabled={isSubmitting}
                             className={classes.newButton}
                             variant="contained"
                             component="label"
@@ -149,6 +209,7 @@ const ArticleEditor = ({currentArticle, dispatch}: ArticleEditorProps) => {
                             Add Image
                         </Button>
                         <Button
+                            disabled={isSubmitting}
                             className={classes.newButton}
                             variant="contained"
                             component="label"
@@ -158,30 +219,42 @@ const ArticleEditor = ({currentArticle, dispatch}: ArticleEditorProps) => {
                             Add Image Group
                         </Button>
                         <Button
+                            disabled={isSubmitting}
                             className={classes.saveButton}
                             variant="contained"
                             component="label"
-                            color={"primary"}
+                            onClick={saveArticle}
                         >
-                            Save
+                            {isSubmitting ? <CircularProgress size={24}/> : "Save"}
                         </Button>
                         <Button
+                            disabled={isSubmitting}
                             className={classes.deleteButton}
                             variant="contained"
                             component="label"
-                            color={"primary"}
+                            onClick={deleteArticle}
                         >
                             Delete
                         </Button>
                     </CardContent>
                 </Card>
             </Grid>
+            {!!message && <Grid item className={classes.entry}>
+                <Card>
+                    <CardContent>
+                        <ArticleManagerMessage/>
+                    </CardContent>
+                </Card>
+            </Grid>}
         </Grid>
     </Container>
 };
 
 const mapStateToProps = (state: AppState) => ({
     currentArticle: state.articles.currentArticle,
+    isSubmitting: state.articles.isSubmitting,
+    message: state.articles.message,
+    isSuccess: state.articles.isSuccess
 });
 
 export default connect(mapStateToProps)(ArticleEditor);

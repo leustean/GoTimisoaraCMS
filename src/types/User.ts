@@ -4,3 +4,8 @@ export default interface User {
     email: string,
     fullName: string
 }
+
+export interface LoginFormUser {
+    username: string,
+    password: string
+}
