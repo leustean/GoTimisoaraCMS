@@ -54,6 +54,9 @@ let articles: Array<Article> = [
     {
         articleId: 1,
         title: "First Article",
+        tag: {
+            ...tags[2]
+        },
         contents: [
             {
                 type: TITLE,

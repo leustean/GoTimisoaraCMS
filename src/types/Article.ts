@@ -1,9 +1,11 @@
 import User from "./User";
+import Tag from "./Tag";
 
 export default interface Article {
     articleId: number,
     title: string,
     author: User,
+    tag: Tag | null,
     createdAt: string,
     updatedAt: string,
     contents: Array<Title | Paragraph | Image | ImageGroup>,

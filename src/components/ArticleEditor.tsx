@@ -6,10 +6,16 @@ import {connect} from "react-redux";
 import Article, {IMAGE, Image, IMAGE_GROUP, ImageGroup, PARAGRAPH, Paragraph, TITLE, Title} from "../types/Article";
 import {useParams} from "react-router-dom"
 import {
-    addImageArticle, addImageGroupArticle,
+    addImageArticle,
+    addImageGroupArticle,
     addParagraphArticle,
-    addTitleArticle, changeIsVisibleInCurrentArticle, changeTitleInCurrentArticle, deleteArticleThunk,
-    loadArticleInFormThunk, saveArticleThunk
+    addTitleArticle,
+    changeIsVisibleInCurrentArticle,
+    changeTagInCurrentArticle,
+    changeTitleInCurrentArticle,
+    deleteArticleThunk,
+    loadArticleInFormThunk,
+    saveArticleThunk
 } from "../thunks/articles";
 import LoadingAnimation from "./LoadingAnimation";
 import Card from "@material-ui/core/Card";
@@ -25,6 +31,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ArticleManagerMessage from "./ArticleManagerMessage";
 import {Redirect} from "react-router-dom"
+import Tag from "../types/Tag";
+import {loadTagsThunk} from "../thunks/tags";
 
 // noinspection TypeScriptValidateJSTypes
 const useStyle = makeStyles(theme => ({
@@ -55,6 +63,7 @@ const useStyle = makeStyles(theme => ({
 
 interface ArticleEditorProps {
     currentArticle: Article | null,
+    tags: Array<Tag> | null,
     isSubmitting: boolean,
     message: string,
     isSuccess: boolean,
@@ -81,13 +90,18 @@ const mapObjectToComponent = (content: Title | Paragraph | Image | ImageGroup, i
     return null;
 };
 
-const ArticleEditor = ({currentArticle, isSubmitting, message, isSuccess, dispatch}: ArticleEditorProps) => {
+const ArticleEditor = ({currentArticle, tags, isSubmitting, message, isSuccess, dispatch}: ArticleEditorProps) => {
     const classes = useStyle();
     const {id} = useParams();
     const parsedId = parseInt(id ? id : "0");
 
     if (isSuccess || (currentArticle === null && message)) {
         return <Redirect to={"/articles"}/>
+    }
+
+    if (tags === null) {
+        dispatch(loadTagsThunk());
+        return <LoadingAnimation/>
     }
 
     if (currentArticle === null || currentArticle.articleId !== parsedId) {
@@ -119,6 +133,10 @@ const ArticleEditor = ({currentArticle, isSubmitting, message, isSuccess, dispat
 
     const changeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(changeTitleInCurrentArticle(event.target.value))
+    };
+
+    const changeTag = (event: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(changeTagInCurrentArticle(Number(event.target.value)))
     };
 
     const changeIsVisible = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -154,6 +172,25 @@ const ArticleEditor = ({currentArticle, isSubmitting, message, isSuccess, dispat
                             value={currentArticle.title}
                             onChange={changeTitle}
                         />
+                        <TextField
+                            disabled={isSubmitting}
+                            className={classes.input}
+                            fullWidth
+                            select
+                            label={"Tag"}
+                            value={currentArticle.tag ? currentArticle.tag.tagId : 0}
+                            variant="outlined"
+                            onChange={changeTag}
+                        >
+                            <MenuItem value={0}>
+                                {"No Tag"}
+                            </MenuItem>
+                            {tags.map((tag:Tag) => (
+                                <MenuItem key={tag.tagId} value={tag.tagId}>
+                                    {tag.tagName}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                         <TextField
                             disabled={isSubmitting}
                             className={classes.input}
@@ -252,6 +289,7 @@ const ArticleEditor = ({currentArticle, isSubmitting, message, isSuccess, dispat
 
 const mapStateToProps = (state: AppState) => ({
     currentArticle: state.articles.currentArticle,
+    tags: state.tags.tags,
     isSubmitting: state.articles.isSubmitting,
     message: state.articles.message,
     isSuccess: state.articles.isSuccess

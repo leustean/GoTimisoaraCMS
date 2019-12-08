@@ -16,6 +16,7 @@ import {AppState} from "../store";
 import Article, {IMAGE, Image, IMAGE_GROUP, ImageGroup, PARAGRAPH, Paragraph, TITLE, Title} from "../types/Article";
 import {DOWN, UP} from "../types/actions";
 import User from "../types/User";
+import Tag from "../types/Tag";
 
 export const loadArticlesAtPageThunk = (pageNumber: number) => (dispatch: (arg0: any) => void) => {
     getArticlesAtPage(pageNumber).then((response: ArticleResponse) => {
@@ -29,6 +30,7 @@ export const loadArticleInFormThunk = (articleId: number) => (dispatch: (arg0: a
         dispatch(loadArticleInForm({
             articleId: 0,
             title: '',
+            tag: null,
             contents: [],
             createdAt: `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`,
             updatedAt: `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`,
@@ -71,6 +73,19 @@ export const changeTitleInCurrentArticle = (title: string) => (dispatch: (arg0: 
     dispatch(changeArticleInForm({
         ...currentArticle,
         title
+    }))
+};
+
+export const changeTagInCurrentArticle = (tagId: number) => (dispatch: (arg0: any) => void, getState: () => AppState) => {
+    const currentArticle = getState().articles.currentArticle;
+    const tags = getState().tags.tags;
+    if (!currentArticle || !tags) {
+        return;
+    }
+    const selectedTag = tags.find((tag: Tag) => tag.tagId === tagId);
+    dispatch(changeArticleInForm({
+        ...currentArticle,
+        tag: selectedTag ? {...selectedTag} : null
     }))
 };
 
