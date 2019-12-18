@@ -12,7 +12,7 @@ interface ArticlesState {
     isSubmitting: boolean,
     isSuccess: boolean,
     message: string,
-    currentPage: number,
+    pageNumber: number,
     numberOfPages: number,
 }
 
@@ -22,7 +22,7 @@ const initialState: ArticlesState = {
     isSubmitting: false,
     isSuccess: false,
     message: "",
-    currentPage: 1,
+    pageNumber: 1,
     numberOfPages: 1
 };
 
@@ -32,7 +32,7 @@ export default function articlesReducer(state = initialState, action: ArticleTyp
             return {
                 ...state,
                 articles: action.articles,
-                currentPage: action.currentPage,
+                pageNumber: action.pageNumber,
                 numberOfPages: action.numberOfPages
             };
         case LOAD_ARTICLE_IN_FORM:

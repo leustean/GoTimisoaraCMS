@@ -8,36 +8,38 @@ import {loadArticlesAtPageThunk} from "../thunks/articles";
 
 interface ArticlePaginationProps {
     numberOfPages: number,
-    currentPage: number,
+    pageNumber: number,
     dispatch: (arg0: any) => void
 }
 
-const ArticlePagination = ({currentPage, numberOfPages, dispatch}: ArticlePaginationProps) => {
+const ArticlePagination = ({pageNumber, numberOfPages, dispatch}: ArticlePaginationProps) => {
     const loadPage = (pageNumber: number) => () => {
         dispatch(loadArticlesAtPageThunk(pageNumber))
     };
 
     const pagination = [];
-    if (currentPage !== 1) {
-        pagination.push(<Button key={"prev"} onClick={loadPage(currentPage - 1)}>
+    if (pageNumber !== 1) {
+        pagination.push(<Button key={"prev"} onClick={loadPage(pageNumber - 1)}>
             <ChevronLeftIcon/>
         </Button>);
     }
-    for (let pageNumber = 1; pageNumber <= numberOfPages; ++pageNumber) {
-        if (pageNumber === currentPage) {
+    for (let currentPage = 1; currentPage <= numberOfPages; ++currentPage) {
+        if (currentPage === pageNumber) {
             pagination.push(
-                <Button key={pageNumber} disabled>{pageNumber}</Button>
+                <Button key={currentPage} disabled>
+                    {currentPage}
+                </Button>
             )
         } else {
             pagination.push(
-                <Button key={pageNumber} onClick={loadPage(currentPage)}>
-                    {pageNumber}
+                <Button key={currentPage} onClick={loadPage(currentPage)}>
+                    {currentPage}
                 </Button>
             )
         }
     }
-    if (currentPage !== numberOfPages) {
-        pagination.push(<Button key={"next"} onClick={loadPage(currentPage + 1)}>
+    if (pageNumber !== numberOfPages) {
+        pagination.push(<Button key={"next"} onClick={loadPage(pageNumber + 1)}>
             <ChevronRightIcon/>
         </Button>);
     }
@@ -48,7 +50,7 @@ const ArticlePagination = ({currentPage, numberOfPages, dispatch}: ArticlePagina
 };
 
 const mapStateToProps = (state: AppState) => ({
-    currentPage: state.articles.currentPage,
+    pageNumber: state.articles.pageNumber,
     numberOfPages: state.articles.numberOfPages
 });
 

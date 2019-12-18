@@ -81,7 +81,7 @@ export interface LoadArticles {
     type: typeof LOAD_ARTICLES,
     articles: Array<Article>,
     numberOfPages: number,
-    currentPage: number
+    pageNumber: number
 }
 
 export interface LoadArticleInForm {

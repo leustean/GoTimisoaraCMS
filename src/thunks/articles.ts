@@ -1,7 +1,7 @@
 import {
     ArticleResponse,
     createArticle,
-    deleteArticle,
+    deleteArticle, getAllTags,
     getArticlesAtPage,
     updateArticle,
 } from "../helpers/api-calls";
@@ -18,8 +18,20 @@ import {DOWN, UP} from "../types/actions";
 import User from "../types/User";
 import Tag from "../types/Tag";
 
-export const loadArticlesAtPageThunk = (pageNumber: number) => (dispatch: (arg0: any) => void) => {
+export const loadArticlesAtPageThunk = (pageNumber: number) => async (dispatch: (arg0: any) => void, getState: () => AppState) => {
+    let loadedTags = getState().tags.tags;
+    if (loadedTags === null) {
+        loadedTags = await getAllTags();
+    }
+
     getArticlesAtPage(pageNumber).then((response: ArticleResponse) => {
+        response.articles = response.articles.map((article: Article) => {
+            const foundTag = loadedTags ? loadedTags.find((tag:Tag) => tag.tagId === article.tagId) : null;
+            return {
+                ...article,
+                tag: foundTag ? foundTag : null
+            }
+        });
         dispatch(loadArticlesAction(response))
     })
 };
@@ -32,9 +44,10 @@ export const loadArticleInFormThunk = (articleId: number) => (dispatch: (arg0: a
             title: '',
             tag: null,
             contents: [],
-            createdAt: `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`,
-            updatedAt: `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`,
-            isVisible: false,
+            createdAt: now.toISOString(),
+            updatedAt: now.toISOString(),
+            editorsChoice: 0,
+            isVisible: 0,
             author: getState().users.appUser as User
         }));
         return;
@@ -89,7 +102,7 @@ export const changeTagInCurrentArticle = (tagId: number) => (dispatch: (arg0: an
     }))
 };
 
-export const changeIsVisibleInCurrentArticle = (isVisible: boolean) => (dispatch: (arg0: any) => void, getState: () => AppState) => {
+export const changeIsVisibleInCurrentArticle = (isVisible: number) => (dispatch: (arg0: any) => void, getState: () => AppState) => {
     const currentArticle = getState().articles.currentArticle;
     if (!currentArticle) {
         return;
@@ -97,6 +110,17 @@ export const changeIsVisibleInCurrentArticle = (isVisible: boolean) => (dispatch
     dispatch(changeArticleInForm({
         ...currentArticle,
         isVisible
+    }))
+};
+
+export const changeEditorsChoiceInCurrentArticle = (editorsChoice: number) => (dispatch: (arg0: any) => void, getState: () => AppState) => {
+    const currentArticle = getState().articles.currentArticle;
+    if (!currentArticle) {
+        return;
+    }
+    dispatch(changeArticleInForm({
+        ...currentArticle,
+        editorsChoice
     }))
 };
 
@@ -180,7 +204,7 @@ export const updateUserInArticles = (user: User) => (dispatch: (arg0: any) => vo
     dispatch(loadArticlesAction({
         articles: updatedArticles,
         numberOfPages: articlesState.numberOfPages,
-        pageNumber: articlesState.currentPage
+        pageNumber: articlesState.pageNumber
     }))
 };
 
@@ -260,12 +284,12 @@ export const moveImageInImageGroup = (imageIndex: number, direction: typeof UP |
 export const saveArticleThunk = (article: Article) => (dispatch: (arg0: any) => void, getState: () => AppState) => {
     const articlesState = getState().articles;
     dispatch(submitArticleForm());
-    const upsertPromise = article.articleId ? updateArticle(article) : createArticle(article);
-    upsertPromise.then((articles: Array<Article>) => {
+    const upsertPromise = article.articleId ? updateArticle(article, articlesState.pageNumber) : createArticle(article, articlesState.pageNumber);
+    upsertPromise.then((articlesResponse: ArticleResponse) => {
         dispatch(loadArticlesAction({
-            articles,
-            numberOfPages: articlesState.numberOfPages,
-            pageNumber: articlesState.currentPage
+            articles: articlesResponse.articles,
+            numberOfPages: articlesResponse.numberOfPages,
+            pageNumber: articlesResponse.pageNumber
         }));
         dispatch(successArticleForm());
     }).catch(() => {
@@ -276,11 +300,11 @@ export const saveArticleThunk = (article: Article) => (dispatch: (arg0: any) => 
 export const deleteArticleThunk = (article: Article) => (dispatch: (arg0: any) => void, getState: () => AppState) => {
     const articlesState = getState().articles;
     dispatch(submitArticleForm());
-    deleteArticle(article).then((articles: Array<Article>) => {
+    deleteArticle(article, articlesState.pageNumber).then((articlesResponse: ArticleResponse) => {
         dispatch(loadArticlesAction({
-            articles,
-            numberOfPages: articlesState.numberOfPages,
-            pageNumber: articlesState.currentPage
+            articles: articlesResponse.articles,
+            numberOfPages: articlesResponse.numberOfPages,
+            pageNumber: articlesResponse.pageNumber
         }));
         dispatch(clearArticleForm());
         dispatch(successArticleForm());

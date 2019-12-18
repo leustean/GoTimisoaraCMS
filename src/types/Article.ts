@@ -4,12 +4,15 @@ import Tag from "./Tag";
 export default interface Article {
     articleId: number,
     title: string,
+    editorsChoice: number,
     author: User,
+    authorId ?: number,
     tag: Tag | null,
+    tagId ?: number,
     createdAt: string,
     updatedAt: string,
     contents: Array<Title | Paragraph | Image | ImageGroup>,
-    isVisible: boolean
+    isVisible: number
 }
 
 export const TITLE = "TITLE";

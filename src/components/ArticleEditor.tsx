@@ -9,7 +9,7 @@ import {
     addImageArticle,
     addImageGroupArticle,
     addParagraphArticle,
-    addTitleArticle,
+    addTitleArticle, changeEditorsChoiceInCurrentArticle,
     changeIsVisibleInCurrentArticle,
     changeTagInCurrentArticle,
     changeTitleInCurrentArticle,
@@ -140,7 +140,11 @@ const ArticleEditor = ({currentArticle, tags, isSubmitting, message, isSuccess, 
     };
 
     const changeIsVisible = (event: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(changeIsVisibleInCurrentArticle(!!event.target.valueAsNumber))
+        dispatch(changeIsVisibleInCurrentArticle(Number(event.target.value)))
+    };
+
+    const changeEditorsChoice = (event: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(changeEditorsChoiceInCurrentArticle(Number(event.target.value)))
     };
 
     const saveArticle = () => {
@@ -197,7 +201,7 @@ const ArticleEditor = ({currentArticle, tags, isSubmitting, message, isSuccess, 
                             fullWidth
                             select
                             label={"Is Visible"}
-                            value={currentArticle.isVisible ? 1 : 0}
+                            value={currentArticle.isVisible}
                             variant="outlined"
                             onChange={changeIsVisible}
                         >
@@ -206,6 +210,23 @@ const ArticleEditor = ({currentArticle, tags, isSubmitting, message, isSuccess, 
                             </MenuItem>
                             <MenuItem value={0}>
                                 Hidden
+                            </MenuItem>
+                        </TextField>
+                        <TextField
+                            disabled={isSubmitting}
+                            className={classes.input}
+                            fullWidth
+                            select
+                            label={"Editor's Choice"}
+                            value={currentArticle.editorsChoice}
+                            variant="outlined"
+                            onChange={changeEditorsChoice}
+                        >
+                            <MenuItem value={1}>
+                                Yes
+                            </MenuItem>
+                            <MenuItem value={0}>
+                                No
                             </MenuItem>
                         </TextField>
                     </CardContent>
